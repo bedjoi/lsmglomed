@@ -8,14 +8,14 @@ const Logo = () => {
             src="/logo.png"
             alt="Logo"
             width={40}
-            height={40}
+            height={30}
             className="cursor-pointer"
           />
           <Image
             src="/logoblack.png"
             alt="Logo"
-            width={120}
-            height={50}
+            width={100}
+            height={30}
             className="cursor-pointer"
           />
     </div>
