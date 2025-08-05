@@ -3,11 +3,18 @@ import React from 'react'
 
 const Logo = () => {
   return (
-      <div>
+      <div className="flex items-center justify-center space-x-2">
           <Image
             src="/logo.png"
             alt="Logo"
-            width={150}
+            width={40}
+            height={40}
+            className="cursor-pointer"
+          />
+          <Image
+            src="/logoblack.png"
+            alt="Logo"
+            width={120}
             height={50}
             className="cursor-pointer"
           />
