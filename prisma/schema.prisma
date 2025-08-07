@@ -10,7 +10,101 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  courses   Course[]
+}
+
+model Course {
+  id          String        @id @default(uuid())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  isPublished Boolean       @default(false)
+  imageUrl    String?       @db.Text
+  title       String
+  description String?
+  slug        String        @unique
+  thumbnail   String?
+  price       Float         @default(0)
+  published   Boolean       @default(false)
+  authorId    String
+  author      User          @relation(fields: [authorId], references: [id])
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  Attachement Attachement[]
+
+  @@index([authorId])
+  @@index([categoryId])
+}
+
+model Category {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  courses Course[]
+}
+
+model Attachement {
+  id        String   @id @default(uuid())
+  name      String
+  url       String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+}
+
+//..........................................................
+
+// Uncomment the following lines to use MongoDB
+
+// datasource db {
+//   provider     = "mongodb"
+//   url          = env("DATABASE_URL")
+//   relationMode = "prisma"
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../lib/generated/prisma"
+// }
+
+// model User {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   createdAt DateTime @default(now())
+//   email     String   @unique
+//   name      String?
+//   role      Role     @default(USER)
+//   posts     Post[]
+// }
+
+// model Post {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   published Boolean  @default(false)
+//   title     String
+//   author    User?    @relation(fields: [authorId], references: [id])
+//   authorId  String   @db.ObjectId
+// }
+
+// enum Role {
+//   USER
+//   ADMIN
+// }
