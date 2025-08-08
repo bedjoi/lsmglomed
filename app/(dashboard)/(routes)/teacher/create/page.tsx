@@ -27,9 +27,10 @@ const createCourse = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-              const response = await axios.post(`/api/teacher/course `, values);
+              const response = await axios.post(`/api/courses `, values);
             console.log("Course created successfully:", response.data);
-            router.push(`/teacher/courses/${response.data.id}`);
+          router.push(`/teacher/courses/${response.data.id}`);
+          toast.success("Course created successfully!");
               // Redirect or perform any other action after successful creation
               // For example, you can redirect to the course details page
               // router.push(`/teacher/courses/${response.data.id}`);
