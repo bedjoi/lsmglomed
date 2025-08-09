@@ -24,7 +24,7 @@ interface TitleFormProps {
 }
 
 const formSchema = z.object({
-    title: z.string().min(2,{message: "Title is required and must be between 2 and 100 characters."}).max(100),
+    title: z.string().min(1,{message: "Title is required and must be between 2 and 100 characters."}).max(100),
     // description: z.string().min(10).max(500),
     // imageUrl: z.string().url(),
     // price: z.number().min(0),
@@ -57,6 +57,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
 
         } catch (error) {
             toast.error("Failed to update course title.")
+            console.log(error)
         }
         console.log(values)
         // await axios.patch(`/api/courses/${courseId}`, data)

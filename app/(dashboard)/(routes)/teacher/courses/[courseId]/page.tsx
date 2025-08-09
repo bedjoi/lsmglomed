@@ -2,12 +2,13 @@ import { IconBadge } from "@/components/icon-badge"
 import { db } from "@/lib/db"
 import { LayoutDashboard } from "lucide-react"
 import { redirect } from "next/navigation"
-import { boolean } from "zod"
 import { TitleForm } from "./_components/title-form"
 
-
-const courseIdPage = async ({params}:{params: {courseId: string}}) => {
-
+interface PageProps {
+  params: { courseId: string }
+}
+const courseIdPage = async ({ params }: PageProps ) => {
+    
 
     const course = await db.course.findUnique({
         where: {
