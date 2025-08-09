@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface TitleFormProps {
     initialData: {
@@ -35,6 +37,8 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
     // Form state
     const [ isEditing, setIsEditing ] = useState(false);
 
+    const router = useRouter();
+
     //form function
     const toggleEdit = () => setIsEditing(current => !current);
 
@@ -45,6 +49,15 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
     })
     const { isSubmitting,isValid } = form.formState
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            await axios.patch(`/api/courses/${courseId}`, values)
+            toast.success("Course title updated successfully.")
+            toggleEdit();
+            router.refresh();
+
+        } catch (error) {
+            toast.error("Failed to update course title.")
+        }
         console.log(values)
         // await axios.patch(`/api/courses/${courseId}`, data)
     }
