@@ -3,13 +3,11 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 interface PageProps {
-  params: { courseId: string }
+  params: Promise<{ courseId: string }>
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: PageProps 
-) {
+export async function PATCH(req: Request, props: PageProps) {
+    const params = await props.params;
     try {
          const { userId  } = await auth();
         const courseId = await params.courseId
