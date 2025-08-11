@@ -12,7 +12,7 @@ export async function PATCH(
 ) {
     try {
          const { userId  } = await auth();
-        const courseId = params.courseId
+        const courseId = await params.courseId
         const values = await req.json()
         console.log(" THE USER ID ="+userId, "THE COURSE ID ="+courseId, "THE VALUES ="+JSON.stringify(values))
 

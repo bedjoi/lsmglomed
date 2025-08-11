@@ -3,11 +3,14 @@ import { db } from "@/lib/db"
 import { LayoutDashboard } from "lucide-react"
 import { redirect } from "next/navigation"
 import { TitleForm } from "./_components/title-form"
+import { DescriptionForm } from "./_components/description-form"
 
 interface PageProps {
   params: { courseId: string }
 }
-const courseIdPage = async ({ params }: PageProps ) => {
+const courseIdPage = async ({ params }: PageProps) => {
+    
+    
     
 
     const course = await db.course.findUnique({
@@ -50,6 +53,10 @@ const courseIdPage = async ({ params }: PageProps ) => {
                       <h1 className="text-xl">Personaliser Ton Cour</h1>
                   </div>
                   <TitleForm
+                      initialData={course}
+                      courseId={course.id}
+                  />
+                  <DescriptionForm
                       initialData={course}
                       courseId={course.id}
                   />
