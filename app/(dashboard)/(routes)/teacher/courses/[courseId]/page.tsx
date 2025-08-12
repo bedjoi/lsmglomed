@@ -58,7 +58,7 @@ const courseIdPage = async (props: PageProps) => {
                         courseId={course.id}
                     />
                     <DescriptionForm
-                        initialData={course}
+                       initialData={{ description: course.description || "" }}
                         courseId={course.id}
                     />
                 </div>
