@@ -4,6 +4,7 @@ import { LayoutDashboard } from "lucide-react"
 import { redirect } from "next/navigation"
 import { TitleForm } from "./_components/title-form"
 import { DescriptionForm } from "./_components/description-form"
+import { ImageForm } from "./_components/image-form"
 
 interface PageProps {
   params: Promise<{ courseId: string }>
@@ -59,6 +60,10 @@ const courseIdPage = async (props: PageProps) => {
                     />
                     <DescriptionForm
                        initialData={{ description: course.description || "" }}
+                        courseId={course.id}
+                    />
+                    <ImageForm
+                       initialData={{ imageUrl: course.imageUrl || "" }}
                         courseId={course.id}
                     />
                 </div>
