@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { Course } from "@prisma/client";
+import Image from "next/image";
+import { FileUpload } from "@/components/file-upload";
 
 interface imageFormProps {
     initialData: Course;
@@ -78,33 +80,28 @@ export const ImageForm = ({ initialData, courseId }: imageFormProps) => {
                     <ImageIcon className="h-10 w-10 text-slate-500"/>
                 </div>
             ):(
-            <div>
-                curent image
+                    <div className="relative aspect-video mt-2">
+                        
+                        <Image
+                            alt="Upload"
+                            fill
+                            className="object-cover rounded-sm"
+                            src={`${initialData.imageUrl}`}
+                        />
             </div>
             )}
             {
                 isEditing && (
-                     <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
-                        control={form.control}
-                        name="imageUrl"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Textarea placeholder="image" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                            <div className="flex items-center gap-2 mt-4">
-                                 <Button type="submit" disabled={isSubmitting || !isValid}>
-                        Save
-                    </Button>
-                   </div>
-                </form>
-            </Form>
+                    <div>
+                        <FileUpload endpoint="courseImage" onChange={(url) => {
+                            if (url) {
+                                onSubmit({imageUrl: url})
+                            }
+                        }} />
+                        <div className="text-xs text-muted-foreground mt-4 ">
+                            16:9 aspect ratio recommended
+                        </div>
+                    </div>
 
                 )
             }
