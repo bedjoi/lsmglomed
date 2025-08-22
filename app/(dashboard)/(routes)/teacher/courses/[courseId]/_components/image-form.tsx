@@ -23,8 +23,14 @@ import { useEdgeStore } from "@/lib/edgestore";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 
-interface imageFormProps {
-    initialData: Course;
+interface imageProps {
+    initialData: {
+        imageUrl: string;
+        // description: string;
+        // imageUrl: string;
+        // price: number;
+        // categoryId: string;
+    };
     courseId: string;
 }
 
@@ -38,7 +44,7 @@ const formSchema = z.object({
         .max(100),
 });
 
-export const ImageForm = ({ initialData, courseId }: imageFormProps) => {
+export const ImageForm = ({ initialData, courseId }: imageProps) => {
     const [file, setFile] = useState<File>();
     const [progress, setProgress] = useState<number>(0);
     const [urls, setUrls] = useState<{
@@ -92,18 +98,22 @@ export const ImageForm = ({ initialData, courseId }: imageFormProps) => {
                     )}
                 </Button>
             </div>
-            {!isEditing && !initialData?.imageUrl ? (
-                <div className=" flex justify-center items-center bg-slate-200 h-60 rounded-md ">
-                    <ImageIcon className="h-10 w-10 text-slate-500" />
+            {!isEditing && initialData?.imageUrl ? (
+                <div className="relative mt-2 h-60 w-full rounded-md overflow-hidden">
+                    {initialData.imageUrl ? (
+                        <Image
+                            alt="Upload"
+                            fill
+                            className="flex mt-2 object-cover center h-10 w-10 rounded-sm"
+                            src={initialData.imageUrl}
+                        />
+                    ) : (
+                        <ImageIcon className="h-10 w-10 text-slate-500" />
+                    )}
                 </div>
             ) : (
-                <div className="relative mt-2 h-60 w-full rounded-md overflow-hidden">
-                    <Image
-                        alt="Upload"
-                        fill
-                        className="flex mt-2 object-cover center h-10 w-10  rounded-sm"
-                        src={`${initialData.imageUrl}`}
-                    />
+                <div className="flex justify-center items-center bg-slate-200 h-60 rounded-md">
+                    <ImageIcon className="h-10 w-10 text-slate-500" />
                 </div>
             )}
             {isEditing && (
