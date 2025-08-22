@@ -52,7 +52,7 @@ const courseIdPage = async (props: PageProps) => {
                         initialData={{ description: course.description || "" }}
                         courseId={course.id}
                     />
-                    <ImageEdgeForm />
+                    <ImageForm initialData={course} courseId={course.id} />
                 </div>
             </div>
         </div>
