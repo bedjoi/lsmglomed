@@ -26,7 +26,7 @@ model Course {
   price       Float         @default(0)
   categoryId  String?
   category    Category?     @relation(fields: [categoryId], references: [id])
-  Attachement Attachement[]
+  attachments Attachment[]
 
   @@index([categoryId])
 }
@@ -37,7 +37,7 @@ model Category {
   courses Course[]
 }
 
-model Attachement {
+model Attachment {
   id        String   @id @default(uuid())
   name      String
   url       String   @db.Text
@@ -86,13 +86,13 @@ model Attachement {
 //   isPublished Boolean       @default(false)
 //   category    Category?     @relation(fields: [categoryId], references: [id])
 //   categoryId  String?       @db.ObjectId
-//   attachments Attachement[]
+//   attachments Attachment[]
 //   User        User          @relation(fields: [userId], references: [id])
 
 //   @@map("courses") // optionnel : nom de la collection MongoDB
 // }
 
-// model Attachement {
+// model Attachment {
 //   id        String   @id @default(auto()) @map("_id") @db.ObjectId
 //   name      String
 //   url       String

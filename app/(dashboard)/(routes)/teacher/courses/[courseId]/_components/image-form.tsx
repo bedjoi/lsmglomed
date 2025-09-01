@@ -24,13 +24,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 
 interface imageProps {
-    initialData: {
-        imageUrl: string;
-        // description: string;
-        // imageUrl: string;
-        // price: number;
-        // categoryId: string;
-    };
+    initialData: Course;
     courseId: string;
 }
 
