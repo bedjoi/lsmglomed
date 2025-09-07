@@ -102,9 +102,7 @@ const courseIdPage = async (props: PageProps) => {
                             <h2 className="text-xl">Course Chapter</h2>
                         </div>
                         <ChaptersForm
-                            initialData={{
-                                description: course.description || "",
-                            }}
+                            initialData={course}
                             courseId={course.id}
                         />
                     </div>

@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Chapter, Course } from "@prisma/client";
+import { ChapterList } from "./chapters-list";
 
 interface chaptersFormProps {
     initialData: Course & { chapters: Chapter[] };
@@ -115,6 +116,11 @@ export const ChaptersForm = ({ initialData, courseId }: chaptersFormProps) => {
                 >
                     {!initialData.chapters && "No chapters created yet."}
                     {/* TODO : Ajouter une liste des chapitres */}
+                    <ChapterList
+                        onEdit={() => {}}
+                        onReorder={() => {}}
+                        items={initialData.chapters || []}
+                    />
                 </div>
             )}
             {!isCreating && (
