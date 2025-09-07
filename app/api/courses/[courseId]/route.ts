@@ -12,11 +12,6 @@ export async function PATCH(req: Request, props: PageProps) {
         const { userId } = await auth();
         const courseId = await params.courseId;
         const values = await req.json();
-        console.log(
-            " THE USER ID =" + userId,
-            "THE COURSE ID =" + courseId,
-            "THE VALUES =" + JSON.stringify(values)
-        );
 
         if (!userId) {
             return new NextResponse("Unauthorized", { status: 401 });

@@ -13,18 +13,30 @@ import { AttachmentForm } from "./_components/attachment-form";
 import { CategoryForm } from "./_components/category-form";
 import { PriceForm } from "./_components/price-form";
 import { ImageForm } from "./_components/image-form";
+import { ChaptersForm } from "./_components/chapters-form";
+import { auth } from "@clerk/nextjs/server";
 
 interface PageProps {
     params: Promise<{ courseId: string }>;
 }
 const courseIdPage = async (props: PageProps) => {
     const params = await props.params;
+    const { userId } = await auth();
+    if (!userId) {
+        return redirect("/");
+    }
 
     const course = await db.course.findUnique({
         where: {
             id: params.courseId,
+            userId: userId,
         },
         include: {
+            chapters: {
+                orderBy: {
+                    position: "asc",
+                },
+            },
             attachments: {
                 orderBy: {
                     createdAt: "desc",
@@ -47,6 +59,7 @@ const courseIdPage = async (props: PageProps) => {
         course.imageUrl,
         course.price,
         course.categoryId,
+        course.chapters.some((chapter) => chapter.isPublished),
     ];
     const totalFields = requiredFields.length;
     const completedFields = requiredFields.filter(Boolean).length;
@@ -88,7 +101,12 @@ const courseIdPage = async (props: PageProps) => {
                             <IconBadge icon={ListCheck} />
                             <h2 className="text-xl">Course Chapter</h2>
                         </div>
-                        <div>TODO : Chapter</div>
+                        <ChaptersForm
+                            initialData={{
+                                description: course.description || "",
+                            }}
+                            courseId={course.id}
+                        />
                     </div>
                     <div>
                         <div className="flex items-center gap-x-2 mb-4">
