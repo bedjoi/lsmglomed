@@ -60,16 +60,19 @@ export const ChapterTitleForm = ({
     const { isSubmitting, isValid } = form.formState;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.patch(`/api/courses/${courseId}`, values);
-            toast.success("Course title updated successfully.");
+            await axios.patch(
+                `/api/courses/${courseId}/chapters/${chapterId}`,
+                values
+            );
+            toast.success("Chapter title updated successfully.");
             toggleEdit();
             router.refresh();
         } catch (error) {
-            toast.error("Failed to update course title.");
+            toast.error("Failed to update Chapter title.");
             console.log(error);
         }
         console.log(values);
-        // await axios.patch(`/api/courses/${courseId}`, data)
+        // await axios.patch(`/api/Chapters/${ChapterId}`, data)
     };
 
     return (

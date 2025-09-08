@@ -1,63 +1,74 @@
-"use client"
+"use client";
 
-import * as z from "zod"
+import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
+import { Editor } from "@/components/editor";
+import { Chapter } from "@prisma/client";
+import { Preview } from "@/components/preview";
 
-interface descriptionFormProps {
-    initialData: {
-        description: string ;
-    };
+interface chapterDescriptionFormProps {
+    initialData: Chapter;
     courseId: string;
+    chapterId: string;
 }
 
 const formSchema = z.object({
-    description: z.string().min(1,{message: "description is required and must be between 2 and 100 characters."}).max(100),
-})
+    description: z.string().min(1),
+});
 
-
-export const DescriptionForm = ({ initialData, courseId }: descriptionFormProps) => {
+export const ChapterDescriptionForm = ({
+    initialData,
+    courseId,
+    chapterId,
+}: chapterDescriptionFormProps) => {
     // Form state
-    const [ isEditing, setIsEditing ] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
     const router = useRouter();
 
     //form function
-    const toggleEdit = () => setIsEditing(current => !current);
-
+    const toggleEdit = () => setIsEditing((current) => !current);
 
     const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: initialData,
-    })
-    const { isSubmitting,isValid } = form.formState
+        resolver: zodResolver(formSchema),
+        defaultValues: { description: initialData.description || "" },
+    });
+    const { isSubmitting, isValid } = form.formState;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.patch(`/api/courses/${courseId}`, values)
-            toast.success("Course description updated successfully.")
+            await axios.patch(
+                `/api/courses/${courseId}/chapters/${chapterId}`,
+                values
+            );
+            toast.success("Chapterdescription updated successfully.");
             toggleEdit();
             router.refresh();
-
         } catch (error) {
-            toast.error("Failed to update course description.")
-            console.log(error)
+            toast.error("Failed to update Chapterdescription.");
+            console.log(error);
         }
-        console.log(values)
-    }
+        console.log(values);
+    };
 
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
             <div className="font-medium flex items-center justify-between">
-                Description Du Cours
+                Description Du Chapitre
                 <Button variant="ghost" onClick={toggleEdit}>
                     {isEditing ? (
                         <span>Annuler</span>
@@ -67,40 +78,52 @@ export const DescriptionForm = ({ initialData, courseId }: descriptionFormProps)
                 </Button>
             </div>
             {!isEditing && (
-                <p className={cn(
-                    "text-sm mt-2",
-                    !initialData.description && "text-slate-500 italic"
-                )}>
-                    {initialData.description || "Pas des description"}
-                </p>
+                <div
+                    className={cn(
+                        "text-sm mt-2",
+                        !initialData.description && "text-slate-500 italic"
+                    )}
+                >
+                    {!initialData.description && "Pas de description"}
+                    {initialData.description && (
+                        <Preview
+                            value={initialData.description}
+                            onChange={() => {}}
+                        />
+                    )}
+                </div>
             )}
-            {
-                isEditing && (
-                     <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Textarea placeholder="description" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                            <div className="flex items-center gap-2 mt-4">
-                                 <Button type="submit" disabled={isSubmitting || !isValid}>
-                        Save
-                    </Button>
-                   </div>
-                </form>
-            </Form>
-
-                )
-            }
-           
+            {isEditing && (
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="flex flex-col gap-4"
+                    >
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl className="m-3">
+                                            <Editor {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                            <Button
+                                type="submit"
+                                disabled={isSubmitting || !isValid}
+                            >
+                                Save
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            )}
         </div>
-    )
-}
+    );
+};
