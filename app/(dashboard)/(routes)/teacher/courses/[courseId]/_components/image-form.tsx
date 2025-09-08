@@ -20,7 +20,6 @@ import { Course } from "@prisma/client";
 import Image from "next/image";
 import { SingleImageDropzone } from "@/components/(edgefile)/single-image-dropzone";
 import { useEdgeStore } from "@/lib/edgestore";
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
 
 interface imageProps {
@@ -106,12 +105,7 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
                     )}
                 </div>
             ) : (
-                <div className="flex justify-center items-center bg-slate-200 h-60 rounded-md">
-                    <ImageIcon className="h-10 w-10 text-slate-500" />
-                </div>
-            )}
-            {isEditing && (
-                <div className="flex flex-col justify-center items-center bg-slate-200 h-60 rounded-md ">
+                <div className="flex flex-col justify-center items-center bg-slate-200  rounded-md ">
                     <SingleImageDropzone
                         width={100}
                         height={100}
