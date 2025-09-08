@@ -35,7 +35,7 @@ export const ChaptersForm = ({ initialData, courseId }: chaptersFormProps) => {
     const [isCreating, setIsCreating] = useState(false);
     // const [isEditing, setIsEditing] = useState(false);
 
-    // const [isUpdating, setIsUpdating] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const router = useRouter();
 
@@ -61,6 +61,23 @@ export const ChaptersForm = ({ initialData, courseId }: chaptersFormProps) => {
             console.log(error);
         }
         console.log(values);
+    };
+    const onReorder = async (
+        updateData: { id: string; position: number }[]
+    ) => {
+        try {
+            setIsUpdating(true);
+            await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
+                list: updateData,
+            });
+            toast.success("Chapters reordered successfully.");
+            router.refresh();
+        } catch (error) {
+            toast.error("Failed to reorder chapters.");
+            console.log(error);
+        } finally {
+            setIsUpdating(false);
+        }
     };
 
     return (
@@ -118,7 +135,7 @@ export const ChaptersForm = ({ initialData, courseId }: chaptersFormProps) => {
                     {/* TODO : Ajouter une liste des chapitres */}
                     <ChapterList
                         onEdit={() => {}}
-                        onReorder={() => {}}
+                        onReorder={onReorder}
                         items={initialData.chapters || []}
                     />
                 </div>
