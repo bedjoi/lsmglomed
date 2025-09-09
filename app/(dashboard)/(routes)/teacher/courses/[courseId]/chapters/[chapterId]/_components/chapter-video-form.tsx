@@ -12,32 +12,30 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
+import { Pencil, PlusCircle, Video } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Course } from "@prisma/client";
-import Image from "next/image";
+import { Chapter, MuxData } from "@prisma/client";
 import { SingleImageDropzone } from "@/components/(edgefile)/single-image-dropzone";
 import { useEdgeStore } from "@/lib/edgestore";
 import { Input } from "@/components/ui/input";
 
-interface imageProps {
-    initialData: Course;
+interface ChapterVideosProps {
+    initialData: Chapter & { muxData?: MuxData | null };
     courseId: string;
+    chapterId: string;
 }
 
 const formSchema = z.object({
-    imageUrl: z
-        .string()
-        .min(1, {
-            message:
-                "image is required and must be between 2 and 100 characters.",
-        })
-        .max(100),
+    videoUrl: z.string().min(1),
 });
 
-export const ImageForm = ({ initialData, courseId }: imageProps) => {
+export const ChapterVideosForm = ({
+    initialData,
+    courseId,
+    chapterId,
+}: ChapterVideosProps) => {
     const [file, setFile] = useState<File>();
     const [progress, setProgress] = useState<number>(0);
     const [url, setUrl] = useState<string | null>(null);
@@ -54,19 +52,22 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            imageUrl: initialData?.imageUrl || "",
+            videoUrl: initialData?.videoUrl || "",
         },
     });
     const { isSubmitting, isValid } = form.formState;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
         try {
-            await axios.patch(`/api/courses/${courseId}`, values);
-            toast.success("Course image updated successfully.");
+            await axios.patch(
+                `/api/courses/${courseId}/chapters/${chapterId}`,
+                values
+            );
+            toast.success("VideoChapter updated successfully.");
             toggleEdit();
             router.refresh();
         } catch (error) {
-            toast.error("Failed to update course image.");
+            toast.error("Failed to update VideoChapter.");
             console.log(error);
         }
         console.log(values);
@@ -75,32 +76,25 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
     return (
         <div className="mt-6 border bg-slate-100 rounded-md p-4">
             <div className="font-medium flex items-center justify-between">
-                image Du Cours
+                Video Du Cours
                 <Button variant="ghost" onClick={toggleEdit}>
                     {isEditing && <span>Annuler</span>}
-                    {!isEditing && !initialData.imageUrl && (
+                    {!isEditing && !initialData.videoUrl && (
                         <>
                             <PlusCircle className="h-4 w-4 mr-2" />
-                            Ajouter Image
+                            Ajouter Video
                         </>
                     )}
-                    {!isEditing && initialData.imageUrl && (
+                    {!isEditing && initialData.videoUrl && (
                         <Pencil className="h-4 w-4 mr-2">Modifier</Pencil>
                     )}
                 </Button>
             </div>
-            {!isEditing && initialData?.imageUrl ? (
+            {!isEditing && !initialData?.videoUrl ? (
                 <div className="relative mt-2 h-60 w-full rounded-md overflow-hidden">
-                    {initialData.imageUrl ? (
-                        <Image
-                            alt="Upload"
-                            fill
-                            className="flex mt-2 object-cover center h-10 w-10 rounded-sm"
-                            src={initialData.imageUrl}
-                        />
-                    ) : (
-                        <ImageIcon className="h-10 w-10 text-slate-500" />
-                    )}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                        <Video className="h-10 w-10 text-slate-500" />
+                    </div>
                 </div>
             ) : (
                 <div className="flex flex-col justify-center items-center bg-slate-200  rounded-md ">
@@ -109,7 +103,8 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
                         height={100}
                         value={file}
                         dropzoneOptions={{
-                            maxSize: 1024 * 1024 * 4, // 1MB
+                            accept: { "video/*": [] },
+                            maxSize: 1024 * 1024 * 200, // 200MB
                         }}
                         onChange={(file) => {
                             setFile(file);
@@ -139,23 +134,23 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
                                             },
                                         });
                                     setUrl(res.url);
-                                    // Appelle directement l'API pour mettre à jour l'imageUrl
+                                    // Appelle directement l'API pour mettre à jour l'videoUrl
                                     try {
                                         await axios.patch(
-                                            `/api/courses/${courseId}`,
+                                            `/api/courses/${courseId}/chapters/${chapterId}`,
                                             {
-                                                imageUrl: res.url,
+                                                videoUrl: res.url,
                                             }
                                         );
                                         toast.success(
-                                            "Course image updated successfully."
+                                            "Chapitre: vidéo mise à jour avec succès."
                                         );
                                         router.refresh();
                                         setIsClickedBtnUpload(true);
                                         setIsEditing(false);
                                     } catch (error) {
                                         toast.error(
-                                            "Failed to update course image."
+                                            "Échec de la mise à jour de la vidéo du chapitre."
                                         );
                                         console.log(error);
                                     }
@@ -170,12 +165,12 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
                                 <div className="hidden">
                                     <FormField
                                         control={form.control}
-                                        name="imageUrl"
+                                        name="videoUrl"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
                                                     <Input
-                                                        placeholder="imageUrl"
+                                                        placeholder="videoUrl"
                                                         {...field}
                                                         value={url || ""}
                                                     />
@@ -196,12 +191,12 @@ export const ImageForm = ({ initialData, courseId }: imageProps) => {
                             </form>
                         </Form>
                     )}
-
-                    {/* {urls?.url && (
-                        <Link href={urls.url} target="_blank">
-                            URL
-                        </Link>
-                    )} */}
+                    {initialData?.videoUrl && !isEditing && (
+                        <div className="mt-2 text-xs text-muted-foreground">
+                            Videos can take a few minutes to process. refresh
+                            the page if video does not appear.
+                        </div>
+                    )}
                 </div>
             )}
         </div>

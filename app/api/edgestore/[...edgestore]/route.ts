@@ -23,15 +23,17 @@ const es = initEdgeStore.context<Context>().create();
 
 const edgeStoreRouter = es.router({
     myPublicImages: es
-        .imageBucket({
-            maxSize: 1024 * 1024 * 4, // 4MB
+        .fileBucket({
+            maxSize: 1024 * 1024 * 200, // 200MB for larger videos
+            accept: ["image/*", "video/*"], // Accept images and videos
         })
+
         .input(
             z.object({
                 type: z.enum(["post", "profile"]),
             })
         )
-        // e.g. /post/my-file.jpg
+        // e.g. /post/my-file.jpg or /post/my-video.mp4
         .path(({ input }) => [{ type: input.type }]),
 
     myProtectedFiles: es
