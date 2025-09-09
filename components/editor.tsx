@@ -14,5 +14,9 @@ export const Editor = ({ onChange, value }: EditorProps) => {
         () => dynamic(() => import("react-quill-new"), { ssr: false }),
         []
     );
-    return <ReactQuill theme="snow" value={value} onChange={onChange} />;
+    return (
+        <div className="w-full bg-white">
+            <ReactQuill theme="snow" value={value} onChange={onChange} />
+        </div>
+    );
 };

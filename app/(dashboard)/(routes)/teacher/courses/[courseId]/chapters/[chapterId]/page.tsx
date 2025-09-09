@@ -1,12 +1,13 @@
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { ArrowLeft, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Eye, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
+import { ChapterAccessForm } from "./_components/chapter-access-form";
 
 const ChapterIdPage = async ({
     params,
@@ -14,20 +15,22 @@ const ChapterIdPage = async ({
     params: { courseId: string; chapterId: string };
 }) => {
     const { userId } = await auth();
+    const courseId = await params.courseId;
+    const chapterId = await params.chapterId;
     if (!userId) {
         return redirect("/");
     }
     const chapter = await db.chapter.findFirst({
         where: {
-            id: params.chapterId,
-            courseId: params.courseId,
+            id: chapterId,
+            courseId: courseId,
         },
         include: {
             muxData: true,
         },
     });
     if (!chapter) {
-        return redirect(`/teacher/courses/${params.courseId}`);
+        return redirect(`/teacher/courses/${courseId}`);
     }
     const requiredFields = [
         chapter.title,
@@ -38,13 +41,13 @@ const ChapterIdPage = async ({
     const completedFields = requiredFields.filter(Boolean).length;
     const completionText = `(${completedFields}/${totalFields})`;
 
-    //fetch chapter details here if needed using params.chapterId
+    //fetch chapter details here if needed using chapterId
     return (
         <div className="p-6">
             <div className="flex items-center justify-between">
                 <div className="w-full">
                     <Link
-                        href={`/teacher/courses/${params.courseId}`}
+                        href={`/teacher/courses/${courseId}`}
                         className="flex items-center text-sm hover:opacity-75 transition mb-6"
                     >
                         <ArrowLeft className="h-5 w-5 text-slate-700 hover:text-slate-900" />
@@ -63,19 +66,30 @@ const ChapterIdPage = async ({
                 <div>
                     <div className="flex items-center gap-x-2">
                         <IconBadge icon={LayoutDashboard} />
-                        <h1 className="text-xl">Personaliser chapitre</h1>
+                        <h2 className="text-xl">Personaliser chapitre</h2>
                     </div>
                     <ChapterTitleForm
                         initialData={{ title: chapter.title || "" }}
-                        courseId={params.courseId}
-                        chapterId={params.chapterId}
+                        courseId={courseId}
+                        chapterId={chapterId}
                     />
 
                     <ChapterDescriptionForm
                         initialData={chapter}
-                        courseId={params.courseId}
-                        chapterId={params.chapterId}
+                        courseId={courseId}
+                        chapterId={chapterId}
                     />
+                    <div>
+                        <div className="flex items-center gap-x-2">
+                            <IconBadge icon={Eye} />
+                            <h2 className="text-xl">Parametre d&apos;Acces</h2>
+                        </div>
+                        <ChapterAccessForm
+                            initialData={chapter}
+                            courseId={courseId}
+                            chapterId={chapterId}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

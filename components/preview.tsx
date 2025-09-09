@@ -13,5 +13,5 @@ export const Preview = ({ value }: PreviewrProps) => {
         () => dynamic(() => import("react-quill-new"), { ssr: false }),
         []
     );
-    return <ReactQuill theme="snow" value={value} readOnly />;
+    return <ReactQuill theme="bubble" value={value} readOnly />;
 };
