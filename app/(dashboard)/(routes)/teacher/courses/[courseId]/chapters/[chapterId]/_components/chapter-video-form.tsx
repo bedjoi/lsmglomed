@@ -90,11 +90,18 @@ export const ChapterVideosForm = ({
                     )}
                 </Button>
             </div>
-            {!isEditing && !initialData?.videoUrl ? (
+            {!isEditing && initialData?.videoUrl ? (
                 <div className="relative mt-2 h-60 w-full rounded-md overflow-hidden">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <Video className="h-10 w-10 text-slate-500" />
-                    </div>
+                    {initialData.videoUrl ? (
+                        <div className="mt-2 text-xs text-muted-foreground flex items-center justify-center h-full">
+                            Videos can take a few minutes to process. refresh
+                            the page if video does not appear.
+                        </div>
+                    ) : (
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <Video className="h-10 w-10 text-slate-500" />
+                        </div>
+                    )}
                 </div>
             ) : (
                 <div className="flex flex-col justify-center items-center bg-slate-200  rounded-md ">
@@ -124,7 +131,7 @@ export const ChapterVideosForm = ({
                             onClick={async () => {
                                 if (file) {
                                     const res =
-                                        await edgestore.myPublicImages.upload({
+                                        await edgestore.myPublicVideos.upload({
                                             file,
                                             input: { type: "post" },
                                             onProgressChange: (

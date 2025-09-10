@@ -22,10 +22,10 @@ function createContext({ req }: CreateContextOptions): Context {
 const es = initEdgeStore.context<Context>().create();
 
 const edgeStoreRouter = es.router({
+    // Keep the original image bucket type to avoid EdgeStore bucket type conflicts
     myPublicImages: es
-        .fileBucket({
-            maxSize: 1024 * 1024 * 200, // 200MB for larger videos
-            accept: ["image/*", "video/*"], // Accept images and videos
+        .imageBucket({
+            maxSize: 1024 * 1024 * 4, // 4MB
         })
 
         .input(
@@ -33,7 +33,21 @@ const edgeStoreRouter = es.router({
                 type: z.enum(["post", "profile"]),
             })
         )
-        // e.g. /post/my-file.jpg or /post/my-video.mp4
+        // e.g. /post/my-file.jpg
+        .path(({ input }) => [{ type: input.type }]),
+
+    // New dedicated bucket for public videos
+    myPublicVideos: es
+        .fileBucket({
+            maxSize: 1024 * 1024 * 200, // 200MB for larger videos
+            accept: ["video/*"],
+        })
+        .input(
+            z.object({
+                type: z.enum(["post", "profile"]),
+            })
+        )
+        // e.g. /post/my-video.mp4
         .path(({ input }) => [{ type: input.type }]),
 
     myProtectedFiles: es
