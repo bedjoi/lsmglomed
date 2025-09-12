@@ -1,7 +1,7 @@
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { ArrowLeft, Dessert, Eye, LayoutDashboard, Video } from "lucide-react";
+import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -13,11 +13,10 @@ import { ChapterVideosForm } from "./_components/chapter-video-form";
 const ChapterIdPage = async ({
     params,
 }: {
-    params: { courseId: string; chapterId: string };
+    params: Promise<{ courseId: string; chapterId: string }>;
 }) => {
     const { userId } = await auth();
-    const courseId = await params.courseId;
-    const chapterId = await params.chapterId;
+    const { courseId, chapterId } = await params;
     if (!userId) {
         return redirect("/");
     }
