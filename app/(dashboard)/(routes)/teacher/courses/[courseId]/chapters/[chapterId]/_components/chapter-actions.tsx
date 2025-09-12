@@ -26,6 +26,26 @@ export const ChapterActions = ({
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState(false);
+    const onClick = async () => {
+        try {
+            if (isPublished) {
+                axios.patch(
+                    `/api/courses/${courseId}/chapters/${chapterId}/unpublish`
+                );
+                toast.success("Chapter Unpublished");
+            } else {
+                axios.patch(
+                    `/api/courses/${courseId}/chapters/${chapterId}/publish`
+                );
+                toast.success("Chapter Published");
+            }
+        } catch (error) {
+            toast.error("something went wrong");
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     const onDelete = async () => {
         try {
             setIsLoading(true);
@@ -44,7 +64,7 @@ export const ChapterActions = ({
     return (
         <div className="flex space-x-2">
             <Button
-                onClick={() => {}}
+                onClick={onClick}
                 disabled={disabled || isLoading}
                 variant={"outline"}
                 size={"sm"}
