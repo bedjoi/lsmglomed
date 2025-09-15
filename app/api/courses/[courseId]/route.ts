@@ -35,6 +35,7 @@ export async function DELETE(
                 },
             },
         });
+        // 6/28
         if (!course) {
             return new NextResponse("Not found", { status: 404 });
         }
