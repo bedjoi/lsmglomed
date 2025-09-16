@@ -1,40 +1,49 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
-import Link from "next/link"; 
+import Link from "next/link";
+import { SearchInput } from "./search-input";
 
 const NavbarRoutes = () => {
-  const pathname = usePathname();
+    const pathname = usePathname();
 
-  // const handleNavigation = (path: string) => {
-  //   router.push(path);
-  // };
-  const isTeacherPage = pathname.startsWith("/teacher");
-  const isStudentPage = pathname.startsWith("/student");
-  const isPlayerPage = pathname.includes("/chapter");
+    // const handleNavigation = (path: string) => {
+    //   router.push(path);
+    // };
+    const isTeacherPage = pathname?.startsWith("/teacher");
+    const isStudentPage = pathname?.startsWith("/student");
+    const isPlayerPage = pathname?.includes("/chapter");
+    const isSearchPage = pathname === "/search";
 
-  return (
-    <div className="flex gap-x-2 ml-auto">
-      {isTeacherPage || isPlayerPage ? (
-        <Link href={`/`} >
-          <Button size="sm" variant="ghost">
-            <LogOut className="h-4 w-4 mr-2" />
-            Exit
-          </Button>
-        </Link>
-      ) : (
-          <Link href={`/teacher/courses`} >
-            <Button size="sm" variant="ghost">
-             Teacher Mode
-            </Button>
-          </Link>
-      )}
-          <UserButton />
-    </div>
-  )
-}
+    return (
+        <>
+            {isSearchPage && (
+                <div className="">
+                    <SearchInput />
+                </div>
+            )}
+            <div className="flex gap-x-2 ml-auto">
+                {isTeacherPage || isPlayerPage ? (
+                    <Link href={`/`}>
+                        <Button size="sm" variant="ghost">
+                            <LogOut className="h-4 w-4 mr-2" />
+                            Exit
+                        </Button>
+                    </Link>
+                ) : (
+                    <Link href={`/teacher/courses`}>
+                        <Button size="sm" variant="ghost">
+                            Teacher Mode
+                        </Button>
+                    </Link>
+                )}
+                <UserButton />
+            </div>
+        </>
+    );
+};
 
 export default NavbarRoutes;
