@@ -18,8 +18,8 @@ const ConfettiProvider = () => {
             initialVelocityX={{ min: -10, max: 10 }}
             initialVelocityY={{ min: -10, max: 10 }}
             tweenDuration={4000}
-            width={window.innerWidth}
-            height={window.innerHeight}
+            width={5366}
+            height={1615}
             style={{ position: "fixed", top: 0, left: 0 }}
         />
     );
