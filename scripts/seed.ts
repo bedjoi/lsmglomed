@@ -1,5 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
-// import { PrismaClient } from "@prisma/client";
+// const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 const database = new PrismaClient();
 
 async function main() {
