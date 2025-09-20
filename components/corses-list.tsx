@@ -21,7 +21,7 @@ export const CoursesList = ({
                         imageUrl={item.imageUrl!}
                         chapterLength={item.chapters?.length || 0}
                         progress={item.progress}
-                        category={item.category}
+                        category={item.category!}
                         price={item.price}
                     />
                 ))}

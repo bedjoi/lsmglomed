@@ -1,6 +1,9 @@
 "use client ";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
+import { IconBadge } from "@/components/icon-badge";
+import { BookOpen } from "lucide-react";
 interface CourseCardProps {
     id: string;
     title: string;
@@ -21,36 +24,50 @@ const CourseCard = ({
     price,
 }: CourseCardProps) => {
     return (
-        <div className="border  p-4 rounded-lg shadow hover:shadow-lg transition">
-            <h3 className="text-lg font-semibold mb-2">{title}</h3>
-            <p className="text-sm text-gray-600 mb-4">
-                {category ? category.name : "Uncategorized"}
-            </p>
-            <p className="text-gray-700">
-                {imageUrl ? (
-                    <Image
-                        src={imageUrl}
-                        alt={title}
-                        width={400}
-                        height={100}
-                        className="rounded-md "
-                    />
-                ) : (
-                    "No image available."
-                )}
-            </p>
-            <p className="text-gray-700">
-                {price !== null ? `$${price.toFixed(2)}` : "Free"}
-            </p>
-            <p className="text-gray-700">
-                {chapterLength} chapter{chapterLength !== 1 ? "s" : ""}
-            </p>
-            {progress !== null && (
-                <p className="text-green-600">
-                    Progress: {progress.toFixed(2)}%
-                </p>
-            )}
-        </div>
+        <Link href={`/courses/${id}`}>
+            <div className="group hover:shadow-sm transition overflow-hidden rounded-lg p-3 h-full">
+                <div className="relative w-full aspect-video rounded-md overflow-hidden">
+                    {imageUrl ? (
+                        <Image
+                            src={imageUrl}
+                            alt={title}
+                            width={200}
+                            height={100}
+                            className="rounded-md object-cover w-full h-40 mb-4 bg-gray-200 group-hover:scale-105 transition"
+                        />
+                    ) : (
+                        "No image available."
+                    )}
+                </div>
+                <div className="flex flex-col pt-2">
+                    <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
+                        {title}{" "}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                        {category?.name}
+                    </p>
+                    <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
+                        <div className="flex items-center gap-x-1 text-slate-500">
+                            <IconBadge size="sm" icon={BookOpen} />
+                            {chapterLength}
+                            {chapterLength === 1 ? " Chapter" : " Chapters"}
+                        </div>
+                    </div>
+                    {progress !== null ? (
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                            <div
+                                className="bg-sky-600 h-2.5 rounded-full transition-all"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
+                    ) : price !== null ? (
+                        <div className="text-sm font-semibold text-slate-700">
+                            {price === 0 ? "Free" : `$${price.toFixed(2)}`}
+                        </div>
+                    ) : null}
+                </div>
+            </div>
+        </Link>
     );
 };
 
