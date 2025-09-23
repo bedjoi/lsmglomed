@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import VideoPlayer from "./_components/video-player";
 import CourseEnrollButton from "./_components/course-enroll-button";
 import { Preview } from "@/components/preview";
+import { File } from "lucide-react";
 
 export default async function ChapterIdPage({
     params,
@@ -79,7 +80,7 @@ export default async function ChapterIdPage({
                         <p>You have access to this chapter.</p>
                     ) : (
                         <CourseEnrollButton
-                            courseId={params.courseId!}
+                            courseId={courseId!}
                             price={course.price!}
                         />
                     )}
@@ -100,6 +101,8 @@ export default async function ChapterIdPage({
                                     rel="noopener noreferrer"
                                     className="flex items-center p-3 w-full bg-sky-200 border text-sky-700 rounded-md hover:underline"
                                 >
+                                    {" "}
+                                    <File />
                                     <p className="line-clamp-1">
                                         {attachment.name}
                                     </p>

@@ -8,13 +8,14 @@ import { getCourses } from "@/actions/get-courses";
 import { CoursesList } from "@/components/corses-list";
 
 interface SearchPageProps {
-    searchParams: {
+    searchParams: Promise<{
         title?: string;
         categoryId?: string;
-    };
+    }>;
 }
 
-const SearchPage = async ({ searchParams }: SearchPageProps) => {
+const SearchPage = async (props: SearchPageProps) => {
+    const searchParams = await props.searchParams;
     const { userId } = await auth();
 
     if (!userId) {

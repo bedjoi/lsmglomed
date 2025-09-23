@@ -13,10 +13,8 @@ const mux = new Mux({
 });
 const { video } = mux;
 
-export async function DELETE(
-    req: Request,
-    { params }: { params: { courseId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ courseId: string }> }) {
+    const params = await props.params;
     try {
         const { userId } = await auth();
         if (!userId) {
