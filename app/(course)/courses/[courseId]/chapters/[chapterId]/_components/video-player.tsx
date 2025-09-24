@@ -56,27 +56,26 @@ function VideoPlayer({
                     onCanPlay={() => setIsReady(true)}
                     onEnded={async () => {
                         if (completeOnEnd) {
-                            const toastId = toast.loading(
-                                "Marking chapter as complete..."
-                            );
+                            // const toastId = toast.loading(
+                            //     "Marking chapter as complete..."
+                            // );
                             try {
-                                await axios.post(
-                                    `/api/courses/${courseId}/chapters/${chapterId}/complete`
+                                await axios.put(
+                                    `/api/courses/${courseId}/chapters/${chapterId}/progress`,
+                                    {
+                                        isCompleted: true,
+                                    }
                                 );
-                                toast.success("Chapter marked as complete!", {
-                                    id: toastId,
-                                });
+                                toast.success("Chapter marked as complete!");
                                 if (nextChapterId) {
                                     router.push(
                                         `/courses/${courseId}/chapters/${nextChapterId}`
                                     );
                                 }
-                                startConfetti();
+                                router.refresh();
                             } catch (error) {
                                 console.log(error);
-                                toast.error("Something went wrong.", {
-                                    id: toastId,
-                                });
+                                toast.error("Something went wrong.");
                             }
                         } else {
                             if (nextChapterId) {
