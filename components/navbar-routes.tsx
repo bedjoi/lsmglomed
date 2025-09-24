@@ -10,7 +10,7 @@ import { isTeacher } from "@/lib/teacher";
 
 const NavbarRoutes = () => {
     const pathname = usePathname();
-    const { userId } = useAuth;
+    const { userId } = useAuth();
 
     // const handleNavigation = (path: string) => {
     //   router.push(path);
