@@ -2,10 +2,8 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function POST(
-    req: Request,
-    { params }: { params: { courseId: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ courseId: string }> }) {
+    const params = await props.params;
     try {
         const { userId } = await auth();
         const { title } = await req.json();

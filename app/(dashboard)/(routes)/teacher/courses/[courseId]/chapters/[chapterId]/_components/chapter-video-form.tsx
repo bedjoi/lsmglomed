@@ -2,6 +2,7 @@
 
 import * as z from "zod";
 import axios from "axios";
+import MuxPlayer from "@mux/mux-player-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -20,6 +21,7 @@ import { Chapter, MuxData } from "@prisma/client";
 import { SingleImageDropzone } from "@/components/(edgefile)/single-image-dropzone";
 import { useEdgeStore } from "@/lib/edgestore";
 import { Input } from "@/components/ui/input";
+import { is } from "zod/v4/locales";
 
 interface ChapterVideosProps {
     initialData: Chapter & { muxData?: MuxData | null };
@@ -90,20 +92,23 @@ export const ChapterVideosForm = ({
                     )}
                 </Button>
             </div>
-            {!isEditing && initialData?.videoUrl ? (
-                <div className="relative mt-2 h-60 w-full rounded-md overflow-hidden">
-                    {initialData.videoUrl ? (
-                        <div className="mt-2 text-xs text-muted-foreground flex items-center justify-center h-full">
-                            Videos can take a few minutes to process. refresh
-                            the page if video does not appear.
-                        </div>
-                    ) : (
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <Video className="h-10 w-10 text-slate-500" />
-                        </div>
-                    )}
-                </div>
-            ) : (
+            {!isEditing &&
+                (!initialData?.videoUrl ? (
+                    <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
+                        <Video className="h-10 w-10 text-slate-500" />
+                    </div>
+                ) : initialData?.muxData?.playbackId ? (
+                    <MuxPlayer playbackId={initialData.muxData.playbackId} />
+                ) : (
+                    <iframe
+                        src={initialData.videoUrl}
+                        className="w-full h-60 rounded-md border"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Chapter Video"
+                    />
+                ))}
+            {isEditing && (
                 <div className="flex flex-col justify-center items-center bg-slate-200  rounded-md ">
                     <SingleImageDropzone
                         width={100}
@@ -129,25 +134,49 @@ export const ChapterVideosForm = ({
                         <button
                             className="bg-black text-white rounded px-2 hover:opacity-80"
                             onClick={async () => {
-                                if (file) {
-                                    const res =
-                                        await edgestore.myPublicVideos.upload({
-                                            file,
-                                            input: { type: "post" },
-                                            onProgressChange: (
-                                                progress: number
-                                            ) => {
-                                                setProgress(progress);
-                                            },
-                                        });
+                                if (!file) return;
+                                // retry upload up to 3 times with exponential backoff
+                                const uploadWithRetry = async () => {
+                                    const maxAttempts = 3;
+                                    let lastError: unknown;
+                                    for (
+                                        let attempt = 1;
+                                        attempt <= maxAttempts;
+                                        attempt++
+                                    ) {
+                                        try {
+                                            return await edgestore.myPublicVideos.upload(
+                                                {
+                                                    file,
+                                                    input: { type: "post" },
+                                                    onProgressChange: (
+                                                        progress: number
+                                                    ) => {
+                                                        setProgress(progress);
+                                                    },
+                                                }
+                                            );
+                                        } catch (err) {
+                                            lastError = err;
+                                            // small backoff: 0.5s, 1s
+                                            if (attempt < maxAttempts) {
+                                                const delayMs = 500 * attempt;
+                                                await new Promise((r) =>
+                                                    setTimeout(r, delayMs)
+                                                );
+                                            }
+                                        }
+                                    }
+                                    throw lastError;
+                                };
+
+                                try {
+                                    const res = await uploadWithRetry();
                                     setUrl(res.url);
-                                    // Appelle directement l'API pour mettre à jour l'videoUrl
                                     try {
                                         await axios.patch(
                                             `/api/courses/${courseId}/chapters/${chapterId}`,
-                                            {
-                                                videoUrl: res.url,
-                                            }
+                                            { videoUrl: res.url }
                                         );
                                         toast.success(
                                             "Chapitre: vidéo mise à jour avec succès."
@@ -161,6 +190,11 @@ export const ChapterVideosForm = ({
                                         );
                                         console.log(error);
                                     }
+                                } catch (error) {
+                                    toast.error(
+                                        "Échec du téléversement (EdgeStore). Veuillez réessayer."
+                                    );
+                                    console.log(error);
                                 }
                             }}
                         >
