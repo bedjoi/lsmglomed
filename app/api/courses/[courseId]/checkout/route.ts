@@ -9,8 +9,12 @@ export async function POST(
     { params }: { params: { courseId: string } }
 ) {
     try {
+        console.log("🚀 Début du processus de checkout");
         const user = await currentUser();
         const { courseId } = await params;
+
+        console.log("👤 Utilisateur:", user?.id);
+        console.log("📚 Cours ID:", courseId);
         if (!user || !user.id || !user.emailAddresses?.[0]?.emailAddress) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
@@ -70,6 +74,8 @@ export async function POST(
             });
         }
 
+        console.log("💳 Création de la session de checkout Stripe");
+
         // Create a checkout session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -95,6 +101,10 @@ export async function POST(
                 courseId: course.id,
             },
         });
+
+        console.log("✅ Session Stripe créée:", session.id);
+        console.log("🔗 URL de redirection:", session.url);
+
         return NextResponse.json({ url: session.url });
     } catch (error) {
         console.log("[COURSE_ID_CHECKOUT_POST]", error);
