@@ -6,23 +6,31 @@ export const getProgress = async (
     try {
         const publishedChapters = await db.chapter.findMany({
             where: {
-                courseId,
+                courseId: courseId,
                 isPublished: true,
             },
-            select: { id: true },
+            select: {
+                id: true,
+            },
         });
+        console.log("VALID PUBLISHED CHAPTERS =" + publishedChapters);
+        console.log(typeof publishedChapters);
+
         const publishedChapterIds = publishedChapters.map(
             (chapter) => chapter.id
         );
+
         const validCompletedChapters = await db.userProgress.count({
             where: {
-                userId,
+                userId: userId,
                 chapterId: {
                     in: publishedChapterIds,
                 },
                 isCompleted: true,
             },
         });
+        console.log("VALID COMPLETED CHAPTER" + validCompletedChapters);
+        console.log("VALID PUBLISHED CHAPTERS" + publishedChapterIds.length);
         const progressPourcentage = publishedChapters
             ? Math.round(
                   (validCompletedChapters / publishedChapterIds.length) * 100

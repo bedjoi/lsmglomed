@@ -59,6 +59,7 @@ const CourseCard = ({
                                 className="bg-sky-600 h-2.5 rounded-full transition-all"
                                 style={{ width: `${progress}%` }}
                             />
+                            <p>{progress}%</p>
                         </div>
                     ) : price !== null ? (
                         <div className="text-sm font-semibold text-slate-700">

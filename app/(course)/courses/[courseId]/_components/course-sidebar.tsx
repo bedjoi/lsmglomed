@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { Chapter, Course, UserProgress } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { CourseProgress } from "@/components/course-progress";
 import { CourseSidebarItem } from "./course-sidebar-item";
 
 interface CourseSidebarProps {
@@ -10,12 +11,12 @@ interface CourseSidebarProps {
             userProgress: UserProgress[] | null;
         })[];
     };
-    progress: number;
+    progressCount: number;
 }
 
 export const CourseSidebar = async ({
     course,
-    progress,
+    progressCount,
 }: CourseSidebarProps) => {
     const { userId } = await auth();
     if (!userId) {
@@ -33,7 +34,14 @@ export const CourseSidebar = async ({
         <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
             <div className="p-8 flex flex-col border-b">
                 <h1 className="font-semibold">{course.title}</h1>
-                {/* Check purchasse and add progress */}
+                {purchase && (
+                    <div className="mt-10">
+                        <CourseProgress
+                            variant="success"
+                            value={progressCount}
+                        />
+                    </div>
+                )}
             </div>
             <div className="flex flex-col w-full">
                 {

@@ -9,6 +9,8 @@ import VideoPlayer from "./_components/video-player";
 import CourseEnrollButton from "./_components/course-enroll-button";
 import { Preview } from "@/components/preview";
 import { File } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CourseProgressButton } from "./_components/course-progress-button";
 
 export default async function ChapterIdPage({
     params,
@@ -31,7 +33,6 @@ export default async function ChapterIdPage({
         nextChapter,
         userProgress,
         purchase,
-        playbackId,
     } = await getChapter({
         userId,
         chapterId: chapterId,
@@ -77,7 +78,12 @@ export default async function ChapterIdPage({
                         {chapter.title}
                     </h1>
                     {purchase ? (
-                        <p>You have access to this chapter.</p>
+                        <CourseProgressButton
+                            chapterId={chapterId}
+                            courseId={courseId}
+                            nextChapterId={nextChapter?.id}
+                            isCompleted={!!userProgress?.isCompleted}
+                        />
                     ) : (
                         <CourseEnrollButton
                             courseId={courseId!}
