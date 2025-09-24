@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { CourseSidebarItem } from "./course-sidebar-item";
 import { CourseSidebar } from "./course-sidebar";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 interface CourseMobileSidebarProps {
     course: Course & {
         chapters: (Chapter & {
@@ -29,6 +30,9 @@ export const CourseMobileSidebar = ({
                 <Menu />
             </SheetTrigger>
             <SheetContent side="left" className="p-0 bg-white w-72">
+                <VisuallyHidden>
+                    <SheetTitle>Course Navigation</SheetTitle>
+                </VisuallyHidden>
                 <CourseSidebar course={course} progressCount={progressCount} />
             </SheetContent>
         </Sheet>
