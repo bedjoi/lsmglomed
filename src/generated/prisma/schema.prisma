@@ -1,0 +1,202 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// datasource db {
+//   provider     = "mysql"
+//   url          = env("DATABASE_URL")
+//   relationMode = "prisma"
+
+// }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  // previewFeatures = ["fullTextSearch","fullTextIndex"] // Enable full-text search and indexing preview features
+  output   = "../src/generated/prisma"
+
+  previewFeatures = ["fullTextSearchPostgres", "fullTextIndex"] // Enable full-text search and indexing preview features
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isPublished Boolean   @default(false)
+  imageUrl    String?   @db.Text
+  title       String    @db.Text
+  userId      String
+  description String?   @db.Text
+  price       Float     @default(0)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  attachments Attachment[]
+  chapters    Chapter[]
+  purchases   Purchase[]
+
+  @@index([categoryId])
+  // @@fulltext([title])
+  @@index([title])
+}
+
+model Category {
+  id      String   @id @default(uuid())
+  name    String   @unique
+  courses Course[]
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  name      String
+  url       String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+}
+
+model Chapter {
+  id          String  @id @default(uuid())
+  title       String  @db.Text
+  description String? @db.Text
+  videoUrl    String? @db.Text
+  position    Int
+
+  isPublished Boolean @default(false)
+  isFree      Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  muxData MuxData?
+
+  userProgress UserProgress[]
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+}
+
+model MuxData {
+  id      String @id @default(uuid())
+  assetId String
+
+  playbackId String?
+  chapterId  String  @unique
+  chapter    Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserProgress {
+  id     String @id @default(uuid())
+  userId String
+
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, chapterId])
+  @@index([chapterId])
+}
+
+model Purchase {
+  id       String @id @default(uuid())
+  userId   String
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model StripeCustomer {
+  id               String @id @default(uuid())
+  stripeCustomerId String @unique
+  userId           String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//..........................................................
+
+// Uncomment the following lines to use MongoDB
+
+// datasource db {
+//   provider     = "mongodb"
+//   url          = env("DATABASE_URL")
+//   relationMode = "prisma"
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../lib/generated/prisma"
+// }
+
+// model User {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   createdAt DateTime @default(now())
+//   email     String   @unique
+//   name      String?
+//   role      Role     @default(USER)
+//   courses   Course[]
+// }
+
+// model Course {
+//   id          String        @id @default(auto()) @map("_id") @db.ObjectId
+//   title       String
+//   userId      String        @db.ObjectId
+//   // autres champs...
+//   createdAt   DateTime      @default(now())
+//   updatedAt   DateTime      @updatedAt
+//   imageUrl    String?
+//   description String?
+//   price       Float?        @default(0)
+//   isPublished Boolean       @default(false)
+//   category    Category?     @relation(fields: [categoryId], references: [id])
+//   categoryId  String?       @db.ObjectId
+//   attachments Attachment[]
+//   User        User          @relation(fields: [userId], references: [id])
+
+//   @@map("courses") // optionnel : nom de la collection MongoDB
+// }
+
+// model Attachment {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   name      String
+//   url       String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+//   courseId  String   @db.ObjectId
+// }
+
+// model Category {
+//   id      String   @id @default(auto()) @map("_id") @db.ObjectId
+//   name    String   @unique
+//   courses Course[]
+// }
+
+// enum Role {
+//   USER
+//   ADMIN
+// }

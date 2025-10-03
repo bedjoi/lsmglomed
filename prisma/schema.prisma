@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch","fullTextIndex"] // Enable full-text search and indexing preview features
+  // previewFeatures = ["fullTextSearch","fullTextIndex"] // Enable full-text search and indexing preview features
    
 }
 
